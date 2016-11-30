@@ -70,7 +70,12 @@ func runGetDescriptor(cmd *cobra.Command, args []string) int {
 			fmt.Println(err)
 			return -1
 		}
-		req, err := m.newRequest("GET", "descriptors/"+indicatortype+"/"+indicator, nil)
+		r := &Request{
+			Method: "GET",
+			Path:   "descriptors/" + indicatortype + "/" + indicator,
+			Body:   nil,
+		}
+		req, err := m.newRequest(r)
 		if err != nil {
 			fmt.Println(err)
 			return -1

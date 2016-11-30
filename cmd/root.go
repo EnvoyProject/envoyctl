@@ -24,6 +24,7 @@ import (
 
 var cfgFile string
 var output string
+var debug bool
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -52,6 +53,7 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.envoyctl.yaml)")
 	RootCmd.PersistentFlags().StringVar(&output, "output", "", "output format (default: json)")
+	RootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "enable debug")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	//	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

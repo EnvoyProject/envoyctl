@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -45,7 +46,18 @@ func runGetIndicators(cmd *cobra.Command, args []string) int {
 		fmt.Println(err)
 		return -1
 	}
-	req, err := m.newRequest("GET", "indicators/"+indicatortype, nil)
+	v := url.Values{}
+	v.Add("type", indicatortype)
+	if output != "" {
+		v.Add("format", output)
+	}
+	r := &Request{
+		Method: "GET",
+		Path:   "indicators/query",
+		Values: v,
+		Body:   nil,
+	}
+	req, err := m.newRequest(r)
 	if err != nil {
 		fmt.Println(err)
 		return -1

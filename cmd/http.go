@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -62,18 +63,27 @@ func NewClient() (*Client, error) {
 // 	obj    interface{}
 // }
 
+// Request this maps a new request
+type Request struct {
+	Method string
+	Path   string
+	Values url.Values
+	Body   io.Reader
+}
+
 //newRequest is used to make a new request
 //and include the configuration data
-func (c *Client) newRequest(method, path string, body io.Reader) (*http.Request, error) {
+func (c *Client) newRequest(r *Request) (*http.Request, error) {
 
 	uri := url.URL{
 		Scheme: "http",
 		Host:   c.config.Address,
-		Path:   "v1/" + path,
+		Path:   "/v1.0/" + r.Path,
 		//RawQuery: params.Encode
 	}
+	uri.RawQuery = r.Values.Encode()
 	//url.Query you can set parameters
-	req, err := http.NewRequest(method, uri.String(), body)
+	req, err := http.NewRequest(r.Method, uri.RequestURI(), r.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +97,12 @@ func (c *Client) newRequest(method, path string, body io.Reader) (*http.Request,
 
 //doRequest performs the request
 func (c *Client) doRequest(r *http.Request) (time.Duration, *http.Response, error) {
+	//output the request if needed
+	if debug {
+		if err := dumpRequest(r); err != nil {
+			log.Fatal(err)
+		}
+	}
 	start := time.Now()
 	resp, err := c.config.HTTPClient.Do(r)
 	diff := time.Now().Sub(start)

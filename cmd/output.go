@@ -92,6 +92,11 @@ func printJSON(v interface{}) {
 	fmt.Printf("%s\n", out)
 }
 
+//printCEF prints the data in CEF format
+func printCEF(v interface{}) {
+	fmt.Printf("cef:%v", v)
+}
+
 //printCSV prints the data as csv
 func printCSV(v interface{}) {
 	out, err := csvOutput(v)
@@ -124,6 +129,8 @@ func handleError(resp *http.Response) {
 		printJSON(errresp)
 	case output == "csv":
 		printCSV(errresp)
+	case output == "cef":
+		printCEF(errresp)
 	default:
 		fmt.Println("error output format not defined")
 	}

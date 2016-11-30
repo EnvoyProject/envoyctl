@@ -60,7 +60,13 @@ func runGetIndicator(cmd *cobra.Command, args []string) int {
 			fmt.Println(err)
 			return -1
 		}
-		req, err := m.newRequest("GET", "indicators/"+indicatortype+"/"+indicator, nil)
+		r := &Request{
+			Method: "GET",
+			Path:   "indicators/" + indicatortype + "/" + indicator,
+			Body:   nil,
+			//Values
+		}
+		req, err := m.newRequest(r)
 		if err != nil {
 			fmt.Println(err)
 			return -1
