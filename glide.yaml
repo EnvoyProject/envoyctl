@@ -1,5 +1,0 @@
-package: bitbucket.org/ppiscuc/envoyctl
-import:
-- package: github.com/fatih/structs
-- package: github.com/spf13/cobra
-- package: github.com/spf13/viper

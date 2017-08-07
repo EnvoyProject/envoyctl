@@ -32,7 +32,7 @@ var RootCmd = &cobra.Command{
 	Short: "Envoyctl is an endpoint to control the Envoy service",
 	Long: `A command line tool that accesses and controls the
 	Envoy service. 
-	Complete documentation is at http://envoy.app`,
+	Complete documentation is at http://envoyproject.com`,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -46,17 +46,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
-
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.envoyctl.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.envoyctl.yml)")
 	RootCmd.PersistentFlags().StringVar(&output, "output", "", "output format (default: json)")
 	RootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "enable debug")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -71,6 +63,6 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("Config file not found. You can create ~/.envoyctl.yaml or pass another file as -config argument")
+		fmt.Println("Config file not found. You can create ~/.envoyctl.yml or pass another file as -config argument")
 	}
 }

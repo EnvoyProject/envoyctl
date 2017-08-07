@@ -16,37 +16,75 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
-// apiversionsCmd represents the apiversions command
-var apiversionsCmd = &cobra.Command{
-	Use:   "apiversions",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+// apiversionCmd represents the apiversions command
+var apiversionCmd = &cobra.Command{
+	Use:   "apiversion",
+	Short: "Show version of Envoy API",
+	Long:  `Get the version of the Envoy service.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("apiversions called")
+		ex := runGetAPIVersion(cmd, args)
+		os.Exit(ex)
 	},
 }
 
+type version struct {
+	Version string `json:"version"`
+}
+
+func runGetAPIVersion(cmd *cobra.Command, args []string) int {
+	m, err := NewClient()
+	if err != nil {
+		fmt.Println(err)
+		return -1
+	}
+	r := &Request{
+		Method: "GET",
+		Path:   "version",
+		Body:   nil,
+	}
+	req, err := m.newRequest(r)
+	if err != nil {
+		fmt.Println(err)
+		return -1
+	}
+	_, resp, err := m.doRequest(req)
+	if err != nil {
+		fmt.Println(err)
+		return -1
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		handleError(resp)
+		return 0
+	}
+	if output == "raw" {
+		printRaw(resp.Body)
+		return 0
+	}
+	var ver version
+	if err = decodeBody(resp, &ver); err != nil {
+		fmt.Println(err)
+		return -1
+	}
+	switch {
+	case output == "json" || output == "":
+		printJSON(ver)
+		return 0
+	case output == "csv":
+		printCSV(ver)
+		return 0
+	default:
+		fmt.Println("output not implemented")
+	}
+	return 0
+
+}
+
 func init() {
-	RootCmd.AddCommand(apiversionsCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// apiversionsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// apiversionsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
+	RootCmd.AddCommand(apiversionCmd)
 }

@@ -52,17 +52,6 @@ func NewClient() (*Client, error) {
 	return client, nil
 }
 
-// //request is a helper to build a request to the API server
-// type request struct {
-// 	config *Config
-// 	method string
-// 	url    *url.URL
-// 	params url.Values
-// 	body   io.Reader
-// 	header http.Header
-// 	obj    interface{}
-// }
-
 // Request this maps a new request
 type Request struct {
 	Method string
@@ -78,7 +67,7 @@ func (c *Client) newRequest(r *Request) (*http.Request, error) {
 	uri := url.URL{
 		Scheme: "http",
 		Host:   c.config.Address,
-		Path:   "/v1.0/" + r.Path,
+		Path:   "/api/" + r.Path,
 		//RawQuery: params.Encode
 	}
 	uri.RawQuery = r.Values.Encode()

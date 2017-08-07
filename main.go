@@ -14,7 +14,7 @@
 
 package main
 
-import "bitbucket.org/ppiscuc/envoyctl/cmd"
+import "gitlab.com/ppiscuc/envoyctl/cmd"
 
 func main() {
 	cmd.Execute()
