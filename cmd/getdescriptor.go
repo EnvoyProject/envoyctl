@@ -35,28 +35,6 @@ var getdescriptorCmd = &cobra.Command{
 	},
 }
 
-type descriptorResponse struct {
-	Code int64 `json:"code"`
-	Data struct {
-		Indicator     string `json:"indicator"`
-		IndicatorType string `json:"indicatortype"`
-		IndicatorInt  int64  `json:"indicatorint,omitempty"`
-		//descriptor
-		//EventID
-		Source      string    `json:"source,omitempty"`
-		SourceURI   string    `json:"sourceuri,omitempty"`
-		AttackType  string    `json:"attacktype,omitempty"`
-		ThreatType  string    `json:"threattype,omitempty"`
-		AddedOn     time.Time `json:"addedon,omitempty"`
-		LastUpdated time.Time `json:"lastupdated,omitempty"`
-		ExpiredOn   time.Time `json:"expiredon,omitempty"`
-		Status      string    `json:"status,omitempty"`
-		Description string    `json:"description,omitempty"`
-		Score       float64   `json:"score,omitempty"`
-		Tags        string    `json:"tags,omitempty"`
-	}
-}
-
 func runGetDescriptor(cmd *cobra.Command, args []string) int {
 	if len(args) < 2 {
 		fmt.Println("please provide an indicatortype and an indicator")

@@ -33,19 +33,6 @@ var getindicatorCmd = &cobra.Command{
 	},
 }
 
-type indicatorResponse struct {
-	Code int64 `json:"code"`
-	Data struct {
-		Indicator     string    `json:"indicator,omitempty"`
-		IndicatorType string    `json:"indicatortype,omitempty"`
-		IndicatorInt  int64     `json:"indicatorint,omitempty"`
-		Score         float64   `json:"score,omitempty"`
-		AddedOn       time.Time `json:"addedon,omitempty"`
-		LastUpdated   time.Time `json:"lastupdated,omitempty"`
-		Description   string    `json:"description,omitempty"`
-		Tags          string    `json:"tags,omitempty"`
-	}
-}
 
 func runGetIndicator(cmd *cobra.Command, args []string) int {
 	if len(args) < 2 {
@@ -85,17 +72,17 @@ func runGetIndicator(cmd *cobra.Command, args []string) int {
 			printRaw(resp.Body)
 			return 0
 		}
-		var indicat indicatorResponse
+		var indicat arenaIndicator
 		if err = decodeBody(resp, &indicat); err != nil {
 			fmt.Println(err)
 			return -1
 		}
 		switch {
 		case output == "json" || output == "":
-			printJSON(indicat.Data)
+			printJSON(indicat)
 			return 0
 		case output == "csv":
-			printCSV(indicat.Data)
+			printCSV(indicat)
 			return 0
 		default:
 			fmt.Println("output not implemented")
