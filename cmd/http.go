@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -123,4 +124,53 @@ func dumpRequest(r *http.Request) error {
 	}
 	fmt.Printf("%q", dump)
 	return nil
+}
+
+//getSecureToken gets a temporary token to perform operations
+func getSecureToken(username, apikey string) (string, error) {
+	apilogin := struct {
+		Username string `json:"username"`
+		Apikey   string `json:"apikey"`
+	}{
+		Username: username,
+		Apikey:   apikey,
+	}
+	enc, err := json.Marshal(apilogin)
+	if err != nil {
+		return "", err
+	}
+	m, err := NewClient()
+	if err != nil {
+		return "", err
+	}
+	r := &Request{
+		Method: "POST",
+		Path:   "apilogin",
+		Body:   bytes.NewReader(enc),
+	}
+	req, err := m.newRequest(r)
+	if err != nil {
+		return "", err
+	}
+	_, resp, err := m.doRequest(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		handleError(resp)
+		return "", errors.New("response error code: %d", resp.StatusCode)
+	}
+	type apiResponse struct {
+		Token    string `json:"token"`
+		Username string `json:"username"`
+		ID       int64  `json:"id"`
+		Apikey   string `json:"apikey"`
+	}
+	var data apiResponse
+	if err = decodeBody(resp, &data); err != nil {
+		return "", err
+	}
+	return data.Token, nil
+
 }
