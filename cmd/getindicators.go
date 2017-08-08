@@ -46,15 +46,11 @@ func runGetIndicators(cmd *cobra.Command, args []string) int {
 		fmt.Println(err)
 		return -1
 	}
-	v := url.Values{}
-	v.Add("type", indicatortype)
-	if output != "" {
-		v.Add("format", output)
-	}
+	path := fmt.Sprintf("indicators/%s", indicatortype)
 	r := &Request{
 		Method: "GET",
-		Path:   "indicators/query",
-		Values: v,
+		Path:   path,
+		Values: nil,
 		Body:   nil,
 	}
 	req, err := m.newRequest(r)
