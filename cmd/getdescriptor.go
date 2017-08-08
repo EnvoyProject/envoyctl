@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -72,17 +71,17 @@ func runGetDescriptor(cmd *cobra.Command, args []string) int {
 			printRaw(resp.Body)
 			return 0
 		}
-		var descriptor descriptorResponse
+		var descriptor arenaDescriptor
 		if err = decodeBody(resp, &descriptor); err != nil {
 			fmt.Println(err)
 			return -1
 		}
 		switch {
 		case output == "json" || output == "":
-			printJSON(descriptor.Data)
+			printJSON(descriptor)
 			return 0
 		case output == "csv":
-			printCSV(descriptor.Data)
+			printCSV(descriptor)
 			return 0
 		default:
 			fmt.Println("output not implemented")

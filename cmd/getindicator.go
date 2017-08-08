@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -32,7 +31,6 @@ var getindicatorCmd = &cobra.Command{
 		os.Exit(ex)
 	},
 }
-
 
 func runGetIndicator(cmd *cobra.Command, args []string) int {
 	if len(args) < 2 {

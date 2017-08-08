@@ -17,7 +17,6 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
 
 	"github.com/spf13/cobra"

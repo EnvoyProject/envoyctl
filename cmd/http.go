@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -13,9 +12,9 @@ import (
 	"time"
 )
 
-//Config stores the configuration of the client
-type Config struct {
-	//Address points to the address of the blacklist AIP
+//Client stores the configuration of the client
+type Client struct {
+	//Address points to the address of the searchhead api
 	Address string
 	//HTTPClient is the client to use. Default will be used if not provided
 	HTTPClient *http.Client
@@ -23,33 +22,24 @@ type Config struct {
 	Token string
 }
 
-// //DefaultConfig returns a default configuration
-// func DefaultConfig() *Config {
-// 	return defaultConfig()
-// }
-
-//Client provides a client for the blacklist API
-type Client struct {
-	config Config
-}
-
-//NewClient creates a new client
+//NewClient creates a new client, and gets a secure token
 func NewClient() (*Client, error) {
 	diskconfig, err := readConfigFile()
 	if err != nil {
 		return nil, err
 	}
-	config := &Config{
+	token, err := getSecureToken(diskconfig.EnvoyAddress, diskconfig.Username, diskconfig.Apikey)
+	if err != nil {
+		return nil, err
+	}
+	client := &Client{
 		Address: diskconfig.EnvoyAddress,
 		HTTPClient: &http.Client{
 			Transport: http.DefaultTransport,
 		},
-		Token: diskconfig.Token,
+		Token: token,
 	}
 
-	client := &Client{
-		config: *config,
-	}
 	return client, nil
 }
 
@@ -67,7 +57,7 @@ func (c *Client) newRequest(r *Request) (*http.Request, error) {
 
 	uri := url.URL{
 		Scheme: "http",
-		Host:   c.config.Address,
+		Host:   c.Address,
 		Path:   "/api/" + r.Path,
 		//RawQuery: params.Encode
 	}
@@ -81,7 +71,7 @@ func (c *Client) newRequest(r *Request) (*http.Request, error) {
 	req.URL.Host = uri.Host
 	req.Host = uri.Host
 
-	req.Header.Set("X-Envoy-Token", c.config.Token)
+	req.Header.Set("X-Envoy-Token", c.Token)
 	return req, nil
 }
 
@@ -94,7 +84,7 @@ func (c *Client) doRequest(r *http.Request) (time.Duration, *http.Response, erro
 		}
 	}
 	start := time.Now()
-	resp, err := c.config.HTTPClient.Do(r)
+	resp, err := c.HTTPClient.Do(r)
 	diff := time.Now().Sub(start)
 	return diff, resp, err
 }
@@ -127,7 +117,7 @@ func dumpRequest(r *http.Request) error {
 }
 
 //getSecureToken gets a temporary token to perform operations
-func getSecureToken(username, apikey string) (string, error) {
+func getSecureToken(backend, username, apikey string) (string, error) {
 	apilogin := struct {
 		Username string `json:"username"`
 		Apikey   string `json:"apikey"`
@@ -139,27 +129,15 @@ func getSecureToken(username, apikey string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	m, err := NewClient()
-	if err != nil {
-		return "", err
-	}
-	r := &Request{
-		Method: "POST",
-		Path:   "apilogin",
-		Body:   bytes.NewReader(enc),
-	}
-	req, err := m.newRequest(r)
-	if err != nil {
-		return "", err
-	}
-	_, resp, err := m.doRequest(req)
+	url := fmt.Sprintf("http://%s/api/apisignin", backend)
+	resp, err := http.Post(url, "application/json", bytes.NewReader(enc))
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		handleError(resp)
-		return "", errors.New("response error code: %d", resp.StatusCode)
+		//handleError(resp)
+		return "", fmt.Errorf("response error code: %d", resp.StatusCode)
 	}
 	type apiResponse struct {
 		Token    string `json:"token"`
