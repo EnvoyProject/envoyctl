@@ -44,7 +44,7 @@ func runGetAPIVersion(cmd *cobra.Command, args []string) int {
 	}
 	r := &Request{
 		Method: "GET",
-		Path:   "version",
+		Path:   "/api/version",
 		Body:   nil,
 	}
 	req, err := m.newRequest(r)

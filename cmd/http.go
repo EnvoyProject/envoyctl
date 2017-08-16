@@ -58,7 +58,7 @@ func (c *Client) newRequest(r *Request) (*http.Request, error) {
 	uri := url.URL{
 		Scheme: "http",
 		Host:   c.Address,
-		Path:   "/api/" + r.Path,
+		Path:   r.Path,
 		//RawQuery: params.Encode
 	}
 	uri.RawQuery = r.Values.Encode()
