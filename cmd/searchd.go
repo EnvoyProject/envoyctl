@@ -17,7 +17,9 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -69,13 +71,23 @@ func runSearchDescriptors(cmd *cobra.Command, args []string) int {
 		fmt.Printf("failed to encode the request: %s", err.Error())
 		return -1
 	}
-	values := new(url.Values)
-	
+	re := "false"
+	if qp.Regex {
+		re = "true"
+	}
+
+	values := url.Values{}
+	values.Set("from", qp.From)
+	values.Set("to", qp.To)
+	values.Set("q", qp.Q)
+	values.Set("offset", strconv.FormatInt(qp.Offset, 10))
+	values.Set("regex", re)
+	values.Set("format", qp.Format)
 	r := &Request{
 		Method: "GET",
 		Path:   "/api/events/search",
 		Body:   nil,
-		Values: url.Values()
+		Values: values,
 	}
 
 	req, err := m.newRequest(r)
