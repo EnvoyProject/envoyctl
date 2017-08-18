@@ -43,7 +43,7 @@ func init() {
 	searchdCmd.PersistentFlags().StringVar(&qp.To, "to", "now", "to")
 	searchdCmd.PersistentFlags().StringVar(&qp.Q, "q", "", "query")
 	searchdCmd.PersistentFlags().Int64Var(&qp.Offset, "offset", 0, "offset of data")
-	searchdCmd.PersistentFlags().BoolVar(&qp.Regex, "regexp", false, "interpret query as regex")
+	searchdCmd.PersistentFlags().BoolVar(&qp.Regex, "regex", false, "interpret query as regex")
 	searchdCmd.PersistentFlags().StringVar(&qp.Format, "format", "rows_json", "format of output")
 }
 
