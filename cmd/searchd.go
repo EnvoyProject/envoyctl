@@ -1,4 +1,4 @@
-// Copyright © 2017 Paul Piscuc <paul@envoyproject.io>
+// Copyright © 2017 Envoy Project <hello@envoyproject.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
